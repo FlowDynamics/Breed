@@ -1,6 +1,14 @@
 # BREED – Alien Tactical Puzzle (Android)
 
+[![Android CI](https://github.com/FlowDynamics/Breed/actions/workflows/android-ci.yml/badge.svg)](https://github.com/FlowDynamics/Breed/actions/workflows/android-ci.yml)
+
+![BREED Feature Graphic](app/src/main/play/listings/de-DE/graphics/feature-graphic/feature-graphic.png)
+
 **BREED** (`com.reeware.android.breed`) ist ein düsteres, im **Hochformat** spielbares Sci-Fi-Taktik- & Schalter-Puzzle für Android – inspiriert von *Alien*, *Alien Breed* und *StarCraft* mit eigenständigem biomechanischem Design.
+
+| Splashscreen | Phase 1: Planung | Phase 2: Gefecht | Schiffskarte |
+| :---: | :---: | :---: | :---: |
+| ![Splash](app/src/main/play/listings/de-DE/graphics/phone-screenshots/01_splash.png) | ![Planung](app/src/main/play/listings/de-DE/graphics/phone-screenshots/02_tactics_phase1.png) | ![Gefecht](app/src/main/play/listings/de-DE/graphics/phone-screenshots/03_combat_phase2.png) | ![Schiffskarte](app/src/main/play/listings/de-DE/graphics/phone-screenshots/04_ship_map.png) |
 
 ---
 
