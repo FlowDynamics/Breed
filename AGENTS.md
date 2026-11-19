@@ -91,7 +91,7 @@ Breed/
         │       │   ├── BuiltInCampaign.kt  # 8 vordefinierte Kampagnen-Level über 2 Planeten (DE & EN)
         │       │   └── LocalStorage.kt     # SharedPreferences-Persistenz (Fortschritt, Sprache, Shop, eigene Level)
         │       ├── billing/
-        │       │   └── BillingManager.kt   # Google Play Billing v7 (Einmalkäufe, Restore, Acknowledge)
+        │       │   └── BillingManager.kt   # Google Play Billing v8 (8.3.0: Einmalkäufe, Auto-Reconnect, Restore)
         │       ├── audio/
         │       │   └── AlienSoundEngine.kt # Prozeduraler Alien-Horror-Soundtrack & Kampf-SFX (AudioTrack)
         │       ├── render/

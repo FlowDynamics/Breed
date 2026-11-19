@@ -8,7 +8,7 @@ Letzte Aktualisierung: **15.11.2026**
 
 ### Umgesetzte Module (`com.reeware.android.breed`)
 - **Gradle-/Android-Setup, Signing & Play Publishing:**
-  - `build.gradle`, `app/build.gradle` (inkl. `com.github.triplet.play` 3.8.6, `billing-ktx:7.1.1`, `signingConfigs.release`), `settings.gradle`, `gradle.properties`, `local.properties`, `app/proguard-rules.pro`, `gradle/wrapper/*`
+  - `build.gradle`, `app/build.gradle` (inkl. `com.github.triplet.play` 3.8.6, `billing:8.3.0`, `signingConfigs.release`), `settings.gradle`, `gradle.properties`, `local.properties`, `app/proguard-rules.pro`, `gradle/wrapper/*`
   - `app/src/main/AndroidManifest.xml` (Hochformat für `SplashActivity`, `MainActivity` & `LevelEditorActivity`), `app/src/main/res/drawable/ic_launcher_breed.xml`, `app/src/main/res/values/strings.xml` (EN) & `values-de/strings.xml` (DE)
   - `app/src/main/play/` (Store-Listings, Release Notes sowie 512×512 App-Icon & 1024×500 Feature-Grafiken auf `de-DE` & `en-US`) + `docs/PLAY_STORE_CHECKLIST.md` + `README.md`
 - **Deterministische Spiellogik (`engine/` – ohne Android-UI-Imports):**
@@ -16,7 +16,7 @@ Letzte Aktualisierung: **15.11.2026**
 - **Kampagne, Serialisierung & Speicher (`data/`):**
   - `LevelJsonCodec.kt`, `BuiltInCampaign.kt` (8 zweisprachige Kampagnen-Räume über *Nostromo-IX* / Acheron IV & *Kryon-Bastion* / Kryon VII), `LocalStorage.kt`
 - **Google Play In-App-Billing (`billing/`):**
-  - `BillingManager.kt` (Billing Library v7, Einmalkäufe, Restore Purchases, Acknowledge)
+  - `BillingManager.kt` (Billing Library v8 / `8.3.0`, Einmalkäufe, Auto-Reconnect, Restore Purchases, Acknowledge)
 - **Audio-Engine (`audio/`):**
   - `AlienSoundEngine.kt` (prozeduraler Alien-Horror-Ambient-Soundtrack mit Sub-Drone, dissonanten Streicher-Swells, Motion-Tracker-Pings, Phase-2-Herzschlag und 15 Kampf-/UI-SFX über `AudioTrack`)
 - **Biomechanisches *StarCraft* × *Alien Breed* Hochformat-Rendering (`render/`):**

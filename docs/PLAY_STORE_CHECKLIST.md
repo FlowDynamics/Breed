@@ -16,7 +16,7 @@ Google erlaubt über die Play Developer API erst Uploads, nachdem eine App einma
    - **Erklärungen:** Entwicklerprogrammrichtlinien & US-Exportgesetze bestätigen → **App erstellen**
 2. **Erstes signiertes App Bundle hochladen** (z. B. im Track *Interner Test* oder *Produktion*):
    - Datei: `app/build/outputs/bundle/release/app-release.aab`
-   - Package ID: `com.reeware.android.breed` (Version `1.0.0`, `versionCode 1`)
+   - Package ID: `com.reeware.android.breed` (Version `1.0.1`, `versionCode 2`, Google Play Billing Library `8.3.0`)
 3. **Store-Texte & -Grafiken (DE & EN)** liegen fertig vorbereitet unter:
    - Deutsch: `app/src/main/play/listings/de-DE/` (`title.txt`, `short-description.txt`, `full-description.txt`, `graphics/icon/icon.png` [512×512], `graphics/feature-graphic/feature-graphic.png` [1024×500])
    - Englisch: `app/src/main/play/listings/en-US/` (`title.txt`, `short-description.txt`, `full-description.txt`, `graphics/icon/icon.png` [512×512], `graphics/feature-graphic/feature-graphic.png` [1024×500])

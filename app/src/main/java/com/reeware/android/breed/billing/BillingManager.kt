@@ -11,8 +11,9 @@ import com.reeware.android.breed.engine.GameLocale
 import com.reeware.android.breed.engine.ShopProduct
 
 /**
- * Offizielle Google Play Billing v7 Integration für optionale In-App-Käufe (Elite-Aliens & Bio-Waffen).
- * - Lädt reale lokale Preise von Google Play (queryProductDetailsAsync)
+ * Offizielle Google Play Billing v8 (8.3.0) Integration für optionale In-App-Käufe (Elite-Aliens & Bio-Waffen).
+ * - Lädt reale lokale Preise von Google Play (queryProductDetailsAsync -> QueryProductDetailsResult)
+ * - Automatische Wiederverbindung (enableAutoServiceReconnection)
  * - Stellt vorhandene Käufe beim Start und manuell wieder her (queryPurchasesAsync)
  * - Bestätigt Käufe ordnungsgemäß (acknowledgePurchase)
  * - Release-Builds erlauben ausschließlich verifizierte Google-Play-Käufe.
@@ -37,6 +38,7 @@ class BillingManager(
                 .enableOneTimeProducts()
                 .build()
         )
+        .enableAutoServiceReconnection()
         .build()
 
     fun startConnection() {
@@ -177,10 +179,10 @@ class BillingManager(
             .setProductList(productList)
             .build()
 
-        billingClient.queryProductDetailsAsync(params) { result, detailsList ->
+        billingClient.queryProductDetailsAsync(params) { result, productDetailsResult ->
             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
                 productDetailsMap.clear()
-                for (d in detailsList) {
+                for (d in productDetailsResult.productDetailsList) {
                     productDetailsMap[d.productId] = d
                 }
             }

@@ -23,7 +23,7 @@
   - Kacheln, Gegner, Marschrouten, Schalter-Links und Tag/Nacht-Zyklen per Touch gestalten, direkt live testen, lokal speichern und per JSON (`LevelJsonCodec`) teilen.
 - **Zweisprachig (DE & EN) & Kostenlos mit optionalen In-App-Käufen:**
   - Vollständig auf **Deutsch & Englisch** (automatisch nach Gerätesprache + `DE`/`EN`-Schalter im HUD).
-  - Basisspiel (alle 8 Kampagnen-Räume, 5 Grund-Aliens, Level-Editor) 100 % kostenlos; optionaler Google-Play-Billing-v7-Shop (`ShopDialog` / `BillingManager`) für 2 Elite-Aliens (**Klingen-Bestie / Blade Reaper**, **Sporen-Bomber / Spore Bomber**) und 2 ausrüstbare Bio-Waffen.
+  - Basisspiel (alle 8 Kampagnen-Räume, 5 Grund-Aliens, Level-Editor) 100 % kostenlos; optionaler Google-Play-Billing-v8-Shop (`8.3.0`, `ShopDialog` / `BillingManager`) für 2 Elite-Aliens (**Klingen-Bestie / Blade Reaper**, **Sporen-Bomber / Spore Bomber**) und 2 ausrüstbare Bio-Waffen.
 
 ---
 
