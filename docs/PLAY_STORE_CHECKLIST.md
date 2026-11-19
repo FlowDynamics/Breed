@@ -1,65 +1,96 @@
 # Google Play Console Setup & Release-Checkliste – **BREED**
 
-Dieses Dokument fasst die einmaligen Schritte in der [Google Play Console](https://play.google.com/console) sowie den automatisierten Release-Workflow (übernommen von `..\GrillSimulator`) zusammen.
+Dieses Dokument fasst den aktuellen Veröffentlichungsstand von **BREED** (`com.reeware.android.breed`) in der [Google Play Console](https://play.google.com/console), die fertige Ausfüllhilfe für die Web-Fragebögen unter **App-Inhalte** sowie den automatisierten Release-Workflow zusammen.
 
 ---
 
-## 1. Einmaliges Anlegen der App in der Google Play Console
+## 1. Bereits erledigt (automatisiert per API & Play Console)
 
-Google erlaubt über die Play Developer API erst Uploads, nachdem eine App einmalig im Web-Interface erstellt wurde:
+- ✅ **App angelegt & erstes signiertes App Bundle hochgeladen:**
+  - Package ID: `com.reeware.android.breed`
+  - Aktueller Stand im Track *Interner Test*: **Version `1.0.2` (`versionCode 3`)** mit **Google Play Billing Library `8.3.0`** (signiert mit 2048-Bit-RSA `breed-upload.keystore`).
+  - Lokale Release-Datei: `app/build/outputs/bundle/release/app-release.aab`
+- ✅ **Store-Texte & Grafiken (`de-DE` & `en-US`) hochgeladen:**
+  - `app/src/main/play/listings/de-DE/` & `en-US/`:
+    - `title.txt`, `short-description.txt`, `full-description.txt`
+    - `graphics/icon/icon.png` (`512×512`)
+    - `graphics/feature-graphic/feature-graphic.png` (`1024×500`)
+    - `graphics/phone-screenshots/` (`1080×2340` Hochformat-Screenshots auf Deutsch & Englisch)
+- ✅ **Alle 5 In-App-Einmalkäufe (One-Time Products) angelegt, weltweit bepreist & aktiviert** über die neue Google Play Developer API v3 (`monetization.onetimeproducts` + `pricing:convertRegionPrices` für Regionsversion `2026/01`):
 
-1. **Alle Apps → App erstellen**
-   - **App-Name:** `BREED`
-   - **Standardsprache:** `Deutsch (Deutschland)` *(zusätzlich `Englisch (Vereinigte Staaten) – en-US` unter Store-Einträge hinzufügen)*
-   - **App oder Spiel:** `Spiel`
-   - **Kostenlos oder kostenpflichtig:** `Kostenlos` *(enthält optionale In-App-Käufe)*
-   - **Erklärungen:** Entwicklerprogrammrichtlinien & US-Exportgesetze bestätigen → **App erstellen**
-2. **Erstes signiertes App Bundle hochladen** (z. B. im Track *Interner Test* oder *Produktion*):
-   - Datei: `app/build/outputs/bundle/release/app-release.aab`
-   - Package ID: `com.reeware.android.breed` (Version `1.0.1`, `versionCode 2`, Google Play Billing Library `8.3.0`)
-3. **Store-Texte & -Grafiken (DE & EN)** liegen fertig vorbereitet unter:
-   - Deutsch: `app/src/main/play/listings/de-DE/` (`title.txt`, `short-description.txt`, `full-description.txt`, `graphics/icon/icon.png` [512×512], `graphics/feature-graphic/feature-graphic.png` [1024×500])
-   - Englisch: `app/src/main/play/listings/en-US/` (`title.txt`, `short-description.txt`, `full-description.txt`, `graphics/icon/icon.png` [512×512], `graphics/feature-graphic/feature-graphic.png` [1024×500])
+| Produkt-ID | Typ | Basispreis (EUR) | Status | Bezeichnung (DE / EN) |
+| :--- | :--- | :--- | :--- | :--- |
+| `breed_alien_reaper` | Einmalkauf (`buy-default`) | `1,99 €` | Aktiv | Elite-Alien: Klingen-Bestie / Blade Reaper |
+| `breed_alien_bomber` | Einmalkauf (`buy-default`) | `1,99 €` | Aktiv | Elite-Alien: Sporen-Bomber / Spore Bomber |
+| `breed_weapon_plasma_venom` | Einmalkauf (`buy-default`) | `1,49 €` | Aktiv | Bio-Waffe: Plasma-Giftdrüsen / Plasma Venom Glands |
+| `breed_weapon_chitin_blades` | Einmalkauf (`buy-default`) | `1,49 €` | Aktiv | Bio-Waffe: Sensen-Chitin-Panzer / Scythe Chitin Armor |
+| `breed_pack_apex_arsenal` | Einmalkauf (`buy-default`) | `4,99 €` | Aktiv | Apex-Schwarm & Arsenal (Komplett) / Apex Brood & Arsenal |
 
----
-
-## 2. In-App-Produkte (Einmalkäufe / Non-Consumables) anlegen
-
-Unter **Monetarisierung → Produkte → In-App-Produkte** in der Play Console exakt diese 5 Produkt-IDs anlegen und aktivieren (sie entsprechen 1:1 `ShopCatalog.kt` & `BillingManager.kt`):
-
-| Produkt-ID | Typ | Vorschlag Preis | Beschreibung (DE / EN) |
-| :--- | :--- | :--- | :--- |
-| `breed_alien_reaper` | Einmalkauf (`INAPP`) | `1,99 €` / `$1.99` | Elite-Alien: Klingen-Bestie / Blade Reaper |
-| `breed_alien_bomber` | Einmalkauf (`INAPP`) | `1,99 €` / `$1.99` | Elite-Alien: Sporen-Bomber / Spore Bomber |
-| `breed_weapon_plasma_venom` | Einmalkauf (`INAPP`) | `1,49 €` / `$1.49` | Bio-Waffe: Plasma-Giftdrüsen / Plasma Venom Glands |
-| `breed_weapon_chitin_blades` | Einmalkauf (`INAPP`) | `1,49 €` / `$1.49` | Bio-Waffe: Sensen-Chitin-Panzer / Scythe Chitin Armor |
-| `breed_pack_apex_arsenal` | Einmalkauf (`INAPP`) | `4,99 €` / `$4.99` | Komplettpaket: Apex-Schwarm & Arsenal / Apex Brood & Arsenal |
-
-*(Wichtig: Für lokale Zahlungstests die eigene Google-E-Mail unter **Einstellungen → Lizenztests** eintragen.)*
+*(Tipp für eigene Zahlungstests ohne reale Abbuchung: In der Play Console unter **Einstellungen → Lizenztests** die eigene Google-Test-E-Mail hinzufügen.)*
 
 ---
 
-## 3. Automatischer Upload künftiger Updates (wie beim *GrillSimulator*)
+## 2. Noch einmalig im Browser ausfüllen: **Richtlinien → App-Inhalte**
 
-Das *Gradle Play Publisher*-Plugin (`com.github.triplet.play`) sowie der 2048-Bit-RSA Upload-Keystore (`breed-upload.keystore`, git-ignoriert), `signing.properties` (git-ignoriert) und `secrets/play-service-account.json` (git-ignoriert) sind bereits eingerichtet.
+Für rechtliche Erklärungen stellt Google keine API bereit — diese Punkte müssen einmalig in der Play Console angeklickt werden (Dauer ca. 3–5 Minuten):
 
-### Signiertes App Bundle lokal neu bauen:
+1. **Datenschutzerklärung (Privacy Policy):**
+   - Fertige zweisprachige Datenschutzerklärung (DE & EN): [`docs/PRIVACY_POLICY.md`](PRIVACY_POLICY.md)
+   - Nach `git push` auf GitHub (sofern das Repo öffentlich ist) als URL eintragen:
+     `https://github.com/FlowDynamics/Breed/blob/main/docs/PRIVACY_POLICY.md`
+     *(oder auf deiner eigenen Website/GitHub Pages hosten).*
+2. **App-Zugriff:**
+   - **„Alle Funktionen sind ohne besonderen Zugriff verfügbar“** *(kein Login, kein Account nötig).*
+3. **Werbung:**
+   - **„Nein, meine App enthält keine Werbung.“**
+4. **Altersfreigabe (IARC-Fragebogen):**
+   - Kategorie: **Spiele**
+   - Gewalt: **Ja → Fantasie-/Sci-Fi-Gewalt** (abstrakte Top-Down-Taktik, keine realistische Gewaltdarstellung, kein Gore, keine verletzten realen Menschen)
+   - Sprache, Sexualität, Drogen, Glücksspiel, Furcht/Horror: jeweils **Nein** *(oder bei Furcht/Horror maximal „leichte düstere Sci-Fi-Atmosphäre“)*
+   - Nutzerinteraktion / Chat / Standortweitergabe: **Nein** *(reines Offline-Einzelspieler-Spiel)*
+   - **Digitale Käufe:** **Ja** *(optionale Einmalkäufe über Google Play Billing)*
+5. **Zielgruppe und Inhalte:**
+   - Altersgruppe: **13–15, 16–17 und 18+** *(ab 13 Jahren, damit keine gesonderten Kinder-/Familien-Richtlinien ausgelöst werden)*
+   - *„Könnte dein Store-Eintrag unbeabsichtigt Kinder ansprechen?“* → **Nein** *(düsteres Sci-Fi-Taktik-Design)*
+6. **Datensicherheit (Data Safety):**
+   - *„Erhebt oder teilt deine App die erforderlichen Arten von Nutzerdaten?“* → **Nein**
+   - Begründung: BREED ist vollständig offline spielbar, speichert Spielstände ausschließlich lokal in Android `SharedPreferences` und nutzt keinerlei Analytics-, Werbe- oder Tracking-SDKs. Zahlungen laufen ausschließlich über Google Play Billing, ohne dass der Entwickler personenbezogene Zahlungsdaten erhält.
+7. **Werbe-ID (Advertising ID):**
+   - **Nein** *(BREED nutzt weder Werbung noch die Werbe-ID).*
+8. **Weitere Erklärungen (News, Gesundheit, Finanzfunktionen, Regierungs-App):**
+   - Jeweils **Nein / Nicht zutreffend** bestätigen.
+9. **Store-Einstellungen → App-Kategorie & Kontaktdaten:**
+   - Kategorie: **Spiele → Strategie** (oder *Puzzle*)
+   - Entwickler-E-Mail-Adresse hinterlegen.
+10. **Internen Test / Geschlossenen Test / Produktion freigeben:**
+    - Den hochgeladenen Entwurf (`versionCode 3`, Version `1.0.2`) unter **Testen → Interner Test** prüfen, Tester-E-Mails hinzufügen und auf **Release überprüfen → Rollout starten** klicken.
+
+---
+
+## 3. Automatisierter Upload künftiger Updates
+
+Das *Gradle Play Publisher*-Plugin (`com.github.triplet.play`) sowie der 2048-Bit-RSA Upload-Keystore (`breed-upload.keystore`, git-ignoriert), `signing.properties` (git-ignoriert) und `secrets/play-service-account.json` (git-ignoriert) sind fertig konfiguriert.
+
+### Vor jedem Gradle-Aufruf auf diesem Windows-PC (IPv4 + HTTP-Timeouts):
 ```powershell
 $env:JAVA_HOME = "C:\Program Files (x86)\Android\openjdk\jdk-17.0.12"
 $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
-$env:JAVA_TOOL_OPTIONS = "-Djava.net.preferIPv4Stack=true"
+$env:JAVA_TOOL_OPTIONS = "-Djava.net.preferIPv4Stack=true -Dsun.net.client.defaultConnectTimeout=30000 -Dsun.net.client.defaultReadTimeout=60000"
 $env:GRADLE_OPTS = "-Djava.net.preferIPv4Stack=true"
-.\gradlew.bat bundleRelease --no-daemon
 ```
 
-### Automatisch in die Play Console hochladen (nach dem ersten manuellen Upload):
+### Befehle:
 ```powershell
-# Interner Test-Track (Standard):
-.\gradlew.bat publishReleaseBundle --no-daemon
+# 1. Tests & signiertes Release App Bundle lokal bauen:
+.\gradlew.bat testDebugUnitTest bundleRelease --no-daemon
 
-# Oder direkt in Produktion (nach Erhöhung von versionCode & versionName):
-.\gradlew.bat publishReleaseBundle -PplayTrack=production --no-daemon
+# 2. Bundle in den internen Test-Track hochladen (Standard):
+.\gradlew.bat :app:publishReleaseBundle --no-daemon --console=plain
 
-# Store-Texte (DE & EN) automatisch synchronisieren:
-.\gradlew.bat publishReleaseListing --no-daemon
+# 3. Oder direkt in Produktion (nach Erhöhung von versionCode & versionName):
+.\gradlew.bat :app:publishReleaseBundle -PplayTrack=production --no-daemon --console=plain
+
+# 4. Store-Texte, Icon, Feature-Grafik & Screenshots (DE & EN) synchronisieren
+#    (--max-workers=1 verhindert Race-Conditions bei parallelen Play-API-Edits):
+.\gradlew.bat :app:publishReleaseListing --max-workers=1 --no-daemon --console=plain
 ```

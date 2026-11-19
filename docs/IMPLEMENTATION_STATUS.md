@@ -1,6 +1,6 @@
 # Implementierungsplan & Status – **BREED**
 
-Letzte Aktualisierung: **15.11.2026**
+Letzte Aktualisierung: **19.11.2026**
 
 ---
 
@@ -10,7 +10,7 @@ Letzte Aktualisierung: **15.11.2026**
 - **Gradle-/Android-Setup, Signing & Play Publishing:**
   - `build.gradle`, `app/build.gradle` (inkl. `com.github.triplet.play` 3.8.6, `billing:8.3.0`, `signingConfigs.release`), `settings.gradle`, `gradle.properties`, `local.properties`, `app/proguard-rules.pro`, `gradle/wrapper/*`
   - `app/src/main/AndroidManifest.xml` (Hochformat für `SplashActivity`, `MainActivity` & `LevelEditorActivity`), `app/src/main/res/drawable/ic_launcher_breed.xml`, `app/src/main/res/values/strings.xml` (EN) & `values-de/strings.xml` (DE)
-  - `app/src/main/play/` (Store-Listings, Release Notes sowie 512×512 App-Icon & 1024×500 Feature-Grafiken auf `de-DE` & `en-US`) + `docs/PLAY_STORE_CHECKLIST.md` + `README.md`
+  - `app/src/main/play/` (Store-Listings, Release Notes, 512×512 App-Icon, 1024×500 Feature-Grafiken & 1080×2340 Hochformat-Screenshots auf `de-DE` & `en-US`) + `docs/PLAY_STORE_CHECKLIST.md` + `docs/PRIVACY_POLICY.md` + `README.md`
 - **Deterministische Spiellogik (`engine/` – ohne Android-UI-Imports):**
   - `GameLocale.kt` (DE & EN), `GridModel.kt`, `UnitModel.kt` (5 Basis- + 2 Elite-Aliens), `ShopCatalog.kt` (Elite-Aliens & Bio-Waffen), `CommandPlanner.kt`, `TurnSimulator.kt`, `CampaignState.kt`
 - **Kampagne, Serialisierung & Speicher (`data/`):**

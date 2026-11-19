@@ -32,7 +32,8 @@
 - [AGENTS.md](AGENTS.md) – Architektur, Verzeichnisstruktur, lokale Toolchain & Konventionen
 - [docs/GAME_DESIGN.md](docs/GAME_DESIGN.md) – Vollständiges Spielkonzept & Regelwerk
 - [docs/IMPLEMENTATION_STATUS.md](docs/IMPLEMENTATION_STATUS.md) – Umsetzungsstand & Verifikation
-- [docs/PLAY_STORE_CHECKLIST.md](docs/PLAY_STORE_CHECKLIST.md) – Google Play Console Setup, In-App-Produkt-IDs & automatischer Upload
+- [docs/PLAY_STORE_CHECKLIST.md](docs/PLAY_STORE_CHECKLIST.md) – Google Play Console Setup, aktive In-App-Produkte, App-Inhalte-Ausfüllhilfe & automatischer Upload
+- [docs/PRIVACY_POLICY.md](docs/PRIVACY_POLICY.md) – Zweisprachige Datenschutzerklärung (DE & EN) für Google Play
 
 ---
 
@@ -49,5 +50,5 @@ $env:GRADLE_OPTS = "-Djava.net.preferIPv4Stack=true"
 ```
 
 - **Signiertes Release-Bundle:** `app/build/outputs/bundle/release/app-release.aab`
-- **Play-Store-Listings & Grafiken (DE & EN):** `app/src/main/play/listings/{de-DE,en-US}/` (`512×512` `icon.png` & `1024×500` `feature-graphic.png`)
+- **Play-Store-Listings & Grafiken (DE & EN):** `app/src/main/play/listings/{de-DE,en-US}/` (`512×512` `icon.png`, `1024×500` `feature-graphic.png` & `1080×2340` `phone-screenshots/`)
 - **Hinweis zu Secrets:** Keystores (`*.keystore`), `signing.properties`, `local.properties` und `secrets/` sind bewusst über `.gitignore` ausgeschlossen und werden nie ins Repository eingecheckt.
