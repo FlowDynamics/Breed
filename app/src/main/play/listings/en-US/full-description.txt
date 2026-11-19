@@ -1,0 +1,22 @@
+In deep orbit above hostile worlds, silence shatters aboard drifting starships. In BREED, you command a biomechanical alien brood against heavily armed Space Marines, Pyro Troopers, Auto-Turrets, and Siege Tanks!
+
+TWO PHASES – 100% DETERMINISTIC TACTICS
+• Phase 1 (Planning): Pick your alien species along the bottom dock, deploy them onto pulsing Creep tiles, and pre-program every step—either by tapping highlighted tiles directly on the room grid or via the command bar.
+• Phase 2 (Auto-Combat): Launch the assault and watch smooth, deterministic chess-like rounds unfold!
+
+SWITCH PUZZLES, COUNTERS & OUTNUMBERING
+• Use air Vents to flank enemies, trigger Consoles to lock armored bulkhead Doors, cut Deck Lights, or power down Auto-Turrets, and detonate explosive Acid Barrels.
+• Victory requires both swarm outnumbering (2v1 / 3v1 bonuses) and smart unit counters (Acid Spitters melt Siege Tank armor; Stalkers strike hard from shadows).
+• Dynamic Day & Night cycles alter sensor ranges, shadow ambush damage, and Egg hatching speed.
+
+SPACESHIP CAMPAIGN & ROOM LOSS
+• Conquer 8 handcrafted rooms across Freighter Nostromo-IX (Acheron IV) and Cruiser Kryon-Bastion (Kryon VII).
+• Upgrade conquered rooms and unlock dedicated per-species mutation trees & Alpha evolutions using Mutagens.
+• Real stakes: if hostiles survive or escape through EXIT, you lose a previously conquered room!
+
+BUILT-IN LEVEL EDITOR
+• Design your own portrait tactical rooms with doors, vents, tanks, patrol routes, and Day/Night cycles, playtest live, and share via JSON.
+
+FREE TO PLAY (ENGLISH & GERMAN)
+• The full base campaign (8 rooms), 5 core alien species, and Level Editor are completely free and playable offline.
+• Optional one-time in-app purchases in the Shop unlock Elite Aliens (Blade Reaper, Spore Bomber) and permanent Bio-Weapons.

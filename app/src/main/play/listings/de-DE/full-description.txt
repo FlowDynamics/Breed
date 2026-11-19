@@ -1,0 +1,22 @@
+Im tiefen Orbit über düsteren Planeten bricht die Stille an Bord verlassener Raumschiffe. In BREED befehligst du eine biomechanische Alien-Brut gegen schwer bewaffnete Space Marines, Pyro-Truppen, Auto-Geschütze und Belagerungs-Panzer!
+
+ZWEI PHASEN – 100 % BERECHENBARE TAKTIK
+• Phase 1 (Planung): Wähle deine Alien-Arten am unteren Bildschirmrand, platziere sie auf lila Creep-Feldern und programmiere jeden Schritt – direkt per Tipp auf dem Raumplan oder über die taktische Befehlsleiste.
+• Phase 2 (Automatik): Starte den Angriff und verfolge in flüssigen, deterministischen Rundenschritten wie beim Schach, ob dein Hinterhalt aufgeht!
+
+SCHALTER-RÄTSEL, KONTER & ÜBERZAHL
+• Lüftungsschächte (Vents) zum Flankieren, Konsolen für gepanzerte Schotts, Licht-Aus & Geschütz-Abschaltung sowie explosive Säurefässer.
+• Sowohl geschickte Überzahl (2v1 / 3v1 Schwarm-Bonus) als auch harte Einheiten-Konter (z. B. Säure-Brut gegen Panzer-Rüstung, Lauerer im Schatten) entscheiden über Sieg oder Niederlage.
+• Tag- & Nacht-Zyklen verändern Sichtweiten, Lauerer-Schattenschaden und Ei-Brutzeiten.
+
+SCHIFFSKARTE, AUSBAU & RAUMVERLUST
+• Erobere 8 handgefertigte Räume auf der Nostromo-IX (Acheron IV) und der Kryon-Bastion (Kryon VII).
+• Baue eroberte Räume aus und schalte feste Mutations-Bäume sowie Alpha-Formen mit Mutagenen frei.
+• Hoher Einsatz: Überleben Menschen oder erreichen das Ziel, verlierst du einen zuvor eroberten Raum!
+
+INTEGRIERTER LEVEL-EDITOR
+• Baue deine eigenen Hochformat-Räume mit Schotts, Vents, Panzern, Routen und Tag/Nacht-Zyklen, teste sie sofort live und teile sie per JSON.
+
+KOSTENLOS SPIELBAR (DEUTSCH & ENGLISCH)
+• Das komplette Basisspiel mit allen 8 Kampagnen-Räumen, 5 Basis-Alien-Arten und dem Level-Editor ist kostenlos und offline spielbar.
+• Optional lassen sich im Shop neue Elite-Aliens (Klingen-Bestie, Sporen-Bomber) und dauerhafte Bio-Waffen per In-App-Kauf freischalten.

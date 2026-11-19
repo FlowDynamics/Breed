@@ -1,0 +1,86 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'com.github.triplet.play'
+}
+
+def signingPropsFile = rootProject.file('signing.properties')
+def signingProps = new Properties()
+if (signingPropsFile.exists()) {
+    signingPropsFile.withInputStream { signingProps.load(it) }
+}
+
+android {
+    namespace 'com.reeware.android.breed'
+    compileSdk 35
+    buildToolsVersion '35.0.0'
+
+    defaultConfig {
+        applicationId "com.reeware.android.breed"
+        minSdk 24
+        targetSdk 36
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    signingConfigs {
+        release {
+            def ksPath = signingProps.getProperty('storeFile') ?: '../export.keystore'
+            def ksFile = file(ksPath)
+            if (ksFile.exists()) {
+                storeFile ksFile
+                storePassword System.getenv('KEYSTORE_PASS') ?: signingProps.getProperty('storePassword', '')
+                keyAlias System.getenv('KEY_ALIAS') ?: signingProps.getProperty('keyAlias', '')
+                keyPassword System.getenv('KEY_PASS') ?: signingProps.getProperty('keyPassword', '')
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (signingConfigs.release.storeFile != null) {
+                signingConfig signingConfigs.release
+            }
+        }
+        debug {
+            debuggable true
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+}
+
+play {
+    def credsFile = rootProject.file('secrets/play-service-account.json')
+    if (credsFile.exists()) {
+        serviceAccountCredentials.set(credsFile)
+    }
+    track.set(project.findProperty('playTrack')?.toString() ?: 'internal')
+    defaultToAppBundles.set(true)
+}
+
+dependencies {
+    implementation 'androidx.annotation:annotation:1.7.1'
+    implementation 'com.android.billingclient:billing-ktx:7.1.1'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.json:json:20231013'
+}
