@@ -42,6 +42,7 @@ class BattleBoardView @JvmOverloads constructor(
 
     // Vorallokierte Caches (vermeidet Allokationen in onDraw)
     private var phase1HumansCache: List<HumanRuntimeState> = emptyList()
+    private var reachableTilesCache: Set<GridPos> = emptySet()
     private val cellLookup = HashMap<GridPos, TileCell>(128)
     private val prevAlienLookup = HashMap<String, AlienRuntimeState>(24)
     private val prevHumanLookup = HashMap<String, HumanRuntimeState>(24)
@@ -135,6 +136,14 @@ class BattleBoardView @JvmOverloads constructor(
         this.remainingCommands = remainingCommands
         this.phase2Snapshot = null
         this.prevPhase2Snapshot = null
+        val selectedUnit = if (commandModeActive && selectedPlacementId != null && remainingCommands > 0) {
+            placements.firstOrNull { it.id == selectedPlacementId }
+        } else null
+        this.reachableTilesCache = if (selectedUnit != null) {
+            CommandPlanner.reachableTiles(level, selectedUnit, remainingCommands)
+        } else {
+            emptySet()
+        }
         rebuildCellLookup(level.cells)
         recomputeMetrics()
         invalidate()
@@ -502,7 +511,7 @@ class BattleBoardView @JvmOverloads constructor(
         }
     }
 
-    /** Zeigt beim ausgewählten Alien direkt auf dem Raster antippbare Zielfelder (Schach-Steuerung). */
+    /** Zeigt beim ausgewählten Alien alle per 1-Tipp erreichbaren Zielfelder, Vents & Konsolen. */
     private fun drawInteractiveCommandHints(canvas: Canvas, lvl: LevelDefinition, pulsePhase: Float) {
         var selected: AlienPlacement? = null
         for (i in placements.indices) {
@@ -513,13 +522,51 @@ class BattleBoardView @JvmOverloads constructor(
         }
         val unit = selected ?: return
         val endPos = CommandPlanner.projectedEndPosition(lvl, unit)
-        val alpha = (115 + (sin(pulsePhase * 5.2f) * 65f).toInt()).coerceIn(60, 210)
+        val alpha = (115 + (sin(pulsePhase * 5.2f) * 60f).toInt()).coerceIn(65, 210)
+        val canVent = CommandPlanner.canUseVents(unit)
 
-        // 1. Begehbare Nachbarfelder für 1-Tipp-Bewegung
+        // 1. Alle innerhalb der restlichen Befehle erreichbaren Felder dezent hervorheben (1-Tipp-Auto-Route!)
+        for (pos in reachableTilesCache) {
+            val c = cellLookup[pos] ?: continue
+            cellToRect(pos, hintRect)
+            hintRect.inset(cellSize * 0.09f, cellSize * 0.09f)
+
+            when {
+                c.type == TileType.CONSOLE -> {
+                    effectPaint.style = Paint.Style.FILL
+                    effectPaint.color = Color.argb(36, 57, 255, 136)
+                    canvas.drawRoundRect(hintRect, cellSize * 0.14f, cellSize * 0.14f, effectPaint)
+                    effectPaint.style = Paint.Style.STROKE
+                    effectPaint.strokeWidth = cellSize * 0.065f
+                    effectPaint.color = Color.argb(235, 57, 255, 136)
+                    canvas.drawRoundRect(hintRect, cellSize * 0.14f, cellSize * 0.14f, effectPaint)
+                }
+                c.type == TileType.VENT && canVent -> {
+                    effectPaint.style = Paint.Style.FILL
+                    effectPaint.color = Color.argb(34, 51, 230, 209)
+                    canvas.drawRoundRect(hintRect, cellSize * 0.14f, cellSize * 0.14f, effectPaint)
+                    effectPaint.style = Paint.Style.STROKE
+                    effectPaint.strokeWidth = cellSize * 0.06f
+                    effectPaint.color = Color.argb(230, 51, 230, 209)
+                    canvas.drawRoundRect(hintRect, cellSize * 0.14f, cellSize * 0.14f, effectPaint)
+                }
+                else -> {
+                    effectPaint.style = Paint.Style.FILL
+                    effectPaint.color = Color.argb(22, 59, 232, 255)
+                    canvas.drawRoundRect(hintRect, cellSize * 0.10f, cellSize * 0.10f, effectPaint)
+                    effectPaint.style = Paint.Style.STROKE
+                    effectPaint.strokeWidth = cellSize * 0.025f
+                    effectPaint.color = Color.argb((alpha * 0.45f).toInt().coerceIn(25, 110), 59, 232, 255)
+                    canvas.drawRoundRect(hintRect, cellSize * 0.10f, cellSize * 0.10f, effectPaint)
+                }
+            }
+        }
+
+        // 2. Direkte Nachbarfelder klarer markieren (leichte Orientierung um das Endfeld)
         for (dir in Direction.entries) {
             val next = endPos.move(dir)
             val c = cellLookup[next] ?: continue
-            if (c.type == TileType.WALL || c.type == TileType.WINDOW || c.type == TileType.EXIT) continue
+            if (!CommandPlanner.isPlannableTile(c) || c.type == TileType.CONSOLE) continue
 
             cellToRect(next, hintRect)
             hintRect.inset(cellSize * 0.11f, cellSize * 0.11f)
@@ -529,7 +576,7 @@ class BattleBoardView @JvmOverloads constructor(
             canvas.drawRoundRect(hintRect, cellSize * 0.12f, cellSize * 0.12f, effectPaint)
 
             badgeText.color = Color.argb(alpha, 135, 244, 255)
-            badgeText.textSize = cellSize * 0.24f
+            badgeText.textSize = cellSize * 0.22f
             val glyph = when (dir) {
                 Direction.NORTH -> "▲"
                 Direction.SOUTH -> "▼"
@@ -539,30 +586,12 @@ class BattleBoardView @JvmOverloads constructor(
             canvas.drawText(glyph, hintRect.centerX(), hintRect.centerY() + badgeText.textSize * 0.35f, badgeText)
         }
 
-        // 2. Verknüpftes Vent-Ziel hervorheben
-        if (unit.species.canUseVent) {
-            val linkedVent = CommandPlanner.findLinkedVent(lvl, endPos)
-            if (linkedVent != null) {
-                cellToRect(linkedVent, hintRect)
-                hintRect.inset(cellSize * 0.07f, cellSize * 0.07f)
-                effectPaint.style = Paint.Style.STROKE
-                effectPaint.strokeWidth = cellSize * 0.07f
-                effectPaint.color = Color.argb(235, 51, 230, 209)
-                canvas.drawRoundRect(hintRect, cellSize * 0.16f, cellSize * 0.16f, effectPaint)
-            }
-        }
-
-        // 3. Erreichbare Konsole hervorheben
-        for (dir in Direction.entries) {
-            val adj = endPos.move(dir)
-            if (cellLookup[adj]?.type == TileType.CONSOLE) {
-                cellToRect(adj, hintRect)
-                hintRect.inset(cellSize * 0.06f, cellSize * 0.06f)
-                effectPaint.style = Paint.Style.STROKE
-                effectPaint.strokeWidth = cellSize * 0.07f
-                effectPaint.color = Color.argb(235, 57, 255, 136)
-                canvas.drawRoundRect(hintRect, cellSize * 0.16f, cellSize * 0.16f, effectPaint)
-            }
+        // 3. Aktuelles Routen-Endfeld dezent markieren, wenn bereits Züge geplant sind
+        if (endPos != unit.startPos) {
+            effectPaint.style = Paint.Style.STROKE
+            effectPaint.strokeWidth = cellSize * 0.055f
+            effectPaint.color = Color.argb(215, 59, 232, 255)
+            canvas.drawCircle(centerX(endPos), centerY(endPos), cellSize * 0.22f, effectPaint)
         }
     }
 

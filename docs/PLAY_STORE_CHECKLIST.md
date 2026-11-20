@@ -8,7 +8,7 @@ Dieses Dokument fasst den aktuellen Veröffentlichungsstand von **BREED** (`com.
 
 - ✅ **App angelegt & erstes signiertes App Bundle hochgeladen:**
   - Package ID: `com.reeware.android.breed`
-  - Aktueller Stand im Track *Interner Test*: **Version `1.0.2` (`versionCode 3`)** mit **Google Play Billing Library `8.3.0`** (signiert mit 2048-Bit-RSA `breed-upload.keystore`).
+  - Aktueller Stand im Track *Interner Test*: **Version `1.0.3` (`versionCode 4`)** mit **Google Play Billing Library `8.3.0`** & vereinfachter 2-Reihen-Touch-Bedienung (signiert mit 2048-Bit-RSA `breed-upload.keystore`).
   - Lokale Release-Datei: `app/build/outputs/bundle/release/app-release.aab`
 - ✅ **Store-Texte & Grafiken (`de-DE` & `en-US`) hochgeladen:**
   - `app/src/main/play/listings/de-DE/` & `en-US/`:

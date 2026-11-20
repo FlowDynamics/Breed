@@ -1,5 +1,5 @@
-Initial release of BREED (v1.0.0):
-• Dark deep-space splash screen & procedural sci-fi horror soundtrack
-• 8 deterministic tactical rooms across 2 starships (English & German)
-• Integrated portrait Level Editor with live testing & JSON export/import
-• Optional In-App Shop for Elite Aliens & Bio-Weapons
+Update v1.0.3 – Simplified Controls:
+• Streamlined 2-row bottom dock replacing 22 separate buttons
+• 1-Tap Auto-Route: tap any reachable tile, Vent, or Console directly on the board to automatically queue the shortest path!
+• Single smart context action button (Vent / Switch / Hatch / Wait) & clean stage picker
+• Larger playfield with clear cyan reachable-range highlights

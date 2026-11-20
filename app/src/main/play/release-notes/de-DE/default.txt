@@ -1,5 +1,5 @@
-Erstveröffentlichung von BREED (v1.0.0):
-• Düsterer Weltraum-Splashscreen & prozeduraler Sci-Fi-Horror-Soundtrack
-• 8 deterministische Taktik-Räume über 2 Raumschiffe (Deutsch & Englisch)
-• Integrierter Hochformat-Level-Editor inkl. Live-Test & JSON Export/Import
-• Optionaler In-App-Shop für Elite-Aliens & Bio-Waffen
+Update v1.0.3 – Deutlich einfachere Bedienung:
+• Aufgeräumtes 2-Reihen-Bedienfeld statt 22 einzelner Buttons
+• 1-Tipp-Auto-Route: Tippe direkt dein Ziel, ein Vent oder eine Konsole auf dem Brett an – der kürzeste Weg wird automatisch geplant!
+• Ein einziger smarter Kontext-Button (Vent / Schalter / Schlüpfen / Warten) & übersichtliche Stufen-Auswahl
+• Größeres Spielfeld mit klarem Cyan-Reichweiten-Highlight

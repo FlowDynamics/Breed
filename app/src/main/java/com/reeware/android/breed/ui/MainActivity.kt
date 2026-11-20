@@ -111,17 +111,12 @@ class MainActivity : Activity() {
     private lateinit var mapCustomBtn: Button
     private lateinit var mapResetBtn: Button
 
-    // Bottom-Docks
+    // Bottom-Docks (vereinfachtes 2-Reihen-Dock in Phase 1)
     private lateinit var phase1Dock: LinearLayout
-    private lateinit var selectedUnitBar: TextView
     private lateinit var undoCmdBtn: Button
     private lateinit var removeCmdBtn: Button
-    private lateinit var ventCmdBtn: Button
-    private lateinit var consoleCmdBtn: Button
-    private lateinit var waitCmdBtn: Button
-    private lateinit var hatchCmdBtn: Button
-    private lateinit var clearAllBtn: Button
-    private val stageButtons = mutableMapOf<EvolutionStage, Button>()
+    private lateinit var smartActionBtn: Button
+    private lateinit var stagePickerBtn: Button
     private val speciesButtons = mutableMapOf<AlienSpecies, Button>()
     private lateinit var startAttackBtn: Button
 
@@ -581,119 +576,86 @@ class MainActivity : Activity() {
         val dock = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             background = UiTheme.panelDrawable(UiTheme.BG_PANEL, UiTheme.BORDER_STEEL, 3, 0f)
-            val p = UiTheme.dp(this@MainActivity, 5)
-            setPadding(p, UiTheme.dp(this@MainActivity, 4), p, p)
+            val p = UiTheme.dp(this@MainActivity, 6)
+            setPadding(p, UiTheme.dp(this@MainActivity, 5), p, p)
         }
 
-        selectedUnitBar = TextView(this).apply {
-            setTextColor(UiTheme.ACCENT_CYAN)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
-            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
-            maxLines = 1
-            setPadding(UiTheme.dp(this@MainActivity, 4), 0, UiTheme.dp(this@MainActivity, 4), UiTheme.dp(this@MainActivity, 2))
-        }
-        dock.addView(selectedUnitBar)
+        val btnPadV = UiTheme.dp(this, 8)
+        val btnPadH = UiTheme.dp(this, 6)
 
-        // Befehls-Reihe 1: Richtungstasten + Undo + Entfernen
-        val moveRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
-        val dirs = listOf(
-            "←" to Direction.WEST,
-            "↑" to Direction.NORTH,
-            "↓" to Direction.SOUTH,
-            "→" to Direction.EAST
-        )
-        for ((lbl, dir) in dirs) {
-            moveRow.addView(UiTheme.makeHudButton(this, lbl, textSizeSp = 12f) {
-                appendMoveCommand(dir)
-            }.apply {
-                layoutParams = UiTheme.rowLayoutParams(weight = 1f, marginDp = 2, context = this@MainActivity)
-            })
-        }
-        undoCmdBtn = UiTheme.makeHudButton(this, "↶", textSizeSp = 11f) { undoLastCommand() }.apply {
-            layoutParams = UiTheme.rowLayoutParams(weight = 1f, marginDp = 2, context = this@MainActivity)
-        }
-        removeCmdBtn = UiTheme.makeHudButton(this, "✕", textColor = UiTheme.ACCENT_ALERT, textSizeSp = 11f) {
-            removeSelectedPlacement()
-        }.apply {
-            layoutParams = UiTheme.rowLayoutParams(weight = 1f, marginDp = 2, context = this@MainActivity)
-        }
-        moveRow.addView(undoCmdBtn)
-        moveRow.addView(removeCmdBtn)
-        dock.addView(moveRow)
-
-        // Befehls-Reihe 2: Vent, Schalter, Warten, Schlüpfen, Leeren
-        val specialRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
-        ventCmdBtn = UiTheme.makeHudButton(this, "Vent", textSizeSp = 11f) { appendVentCommand() }.apply {
-            layoutParams = UiTheme.rowLayoutParams(weight = 1f, marginDp = 2, context = this@MainActivity)
-        }
-        consoleCmdBtn = UiTheme.makeHudButton(this, "Switch", textSizeSp = 11f) { appendConsoleCommand() }.apply {
-            layoutParams = UiTheme.rowLayoutParams(weight = 1.15f, marginDp = 2, context = this@MainActivity)
-        }
-        waitCmdBtn = UiTheme.makeHudButton(this, "Wait", textSizeSp = 11f) { appendSimpleCommand(AlienCommand.Wait) }.apply {
-            layoutParams = UiTheme.rowLayoutParams(weight = 1f, marginDp = 2, context = this@MainActivity)
-        }
-        hatchCmdBtn = UiTheme.makeHudButton(this, "Hatch", textSizeSp = 11f) { appendHatchCommand() }.apply {
-            layoutParams = UiTheme.rowLayoutParams(weight = 1.1f, marginDp = 2, context = this@MainActivity)
-        }
-        clearAllBtn = UiTheme.makeHudButton(this, "Clear", textColor = UiTheme.ACCENT_AMBER, textSizeSp = 10.5f) {
-            clearAllPlacements()
-        }.apply {
-            layoutParams = UiTheme.rowLayoutParams(weight = 0.95f, marginDp = 2, context = this@MainActivity)
-        }
-        specialRow.addView(ventCmdBtn)
-        specialRow.addView(consoleCmdBtn)
-        specialRow.addView(waitCmdBtn)
-        specialRow.addView(hatchCmdBtn)
-        specialRow.addView(clearAllBtn)
-        dock.addView(specialRow)
-
-        // Reihe 3: Entwicklungsstufen + ANGRIFF ▶
-        val stageRow = LinearLayout(this).apply {
+        // Zeile 1: Nur 5 klare, große Aktions-Buttons (Zurück, Weg/Alle, Smart-Aktion, Stufe, ANGRIFF)
+        val actionRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            lp.topMargin = UiTheme.dp(this@MainActivity, 2)
-            layoutParams = lp
         }
-        for (stage in EvolutionStage.entries) {
-            val btn = UiTheme.makeHudButton(this, stage.displayName, textSizeSp = 10.5f) {
-                selectStage(stage)
-            }.apply {
-                layoutParams = UiTheme.rowLayoutParams(weight = 1f, marginDp = 2, context = this@MainActivity)
+
+        undoCmdBtn = UiTheme.makeHudButton(this, "↶", textSizeSp = 13f) {
+            undoLastCommand()
+        }.apply {
+            setPadding(btnPadH, btnPadV, btnPadH, btnPadV)
+            layoutParams = UiTheme.rowLayoutParams(weight = 0.72f, marginDp = 2, context = this@MainActivity)
+        }
+        actionRow.addView(undoCmdBtn)
+
+        removeCmdBtn = UiTheme.makeHudButton(this, "✕", textColor = UiTheme.ACCENT_ALERT, textSizeSp = 12.5f) {
+            removeSelectedPlacement()
+        }.apply {
+            setPadding(btnPadH, btnPadV, btnPadH, btnPadV)
+            setOnLongClickListener {
+                clearAllPlacements()
+                true
             }
-            stageButtons[stage] = btn
-            stageRow.addView(btn)
+            layoutParams = UiTheme.rowLayoutParams(weight = 0.72f, marginDp = 2, context = this@MainActivity)
         }
+        actionRow.addView(removeCmdBtn)
+
+        smartActionBtn = UiTheme.makeHudButton(this, "⏸ Warten", textSizeSp = 11f) {
+            executeSmartAction()
+        }.apply {
+            setPadding(btnPadH, btnPadV, btnPadH, btnPadV)
+            layoutParams = UiTheme.rowLayoutParams(weight = 1.25f, marginDp = 2, context = this@MainActivity)
+        }
+        actionRow.addView(smartActionBtn)
+
+        stagePickerBtn = UiTheme.makeHudButton(this, "Kampf ▾", textColor = UiTheme.ACCENT_CYAN, textSizeSp = 11f) {
+            AlienSoundEngine.playSfx(AlienSoundEngine.Sfx.UI_CLICK)
+            showStagePickerDialog()
+        }.apply {
+            setPadding(btnPadH, btnPadV, btnPadH, btnPadV)
+            layoutParams = UiTheme.rowLayoutParams(weight = 1.15f, marginDp = 2, context = this@MainActivity)
+        }
+        actionRow.addView(stagePickerBtn)
 
         startAttackBtn = UiTheme.makeHudButton(
             this,
-            "ATTACK ▶",
+            "▶ ANGRIFF",
             Color.parseColor("#143922"),
             UiTheme.ACCENT_ALIEN,
             UiTheme.ACCENT_ALIEN,
-            12f
+            12.5f
         ) {
             startPhase2Simulation()
         }.apply {
+            setPadding(btnPadH, btnPadV, btnPadH, btnPadV)
             layoutParams = UiTheme.rowLayoutParams(weight = 1.75f, marginDp = 2, context = this@MainActivity)
         }
-        stageRow.addView(startAttackBtn)
-        dock.addView(stageRow)
+        actionRow.addView(startAttackBtn)
+        dock.addView(actionRow)
 
-        // Unterste Reihe: 5 kostenlose Alien-Arten + 2 Elite-Shop-Aliens (kompakt horizontal scrollbar)
+        // Zeile 2: Große, gut tippbare Alien-Auswahl (5 Basis-Aliens + 2 Elite-Shop-Aliens)
         val speciesScroll = HorizontalScrollView(this).apply {
             isHorizontalScrollBarEnabled = false
             isFillViewport = true
             val lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            lp.topMargin = UiTheme.dp(this@MainActivity, 3)
+            lp.topMargin = UiTheme.dp(this@MainActivity, 4)
             layoutParams = lp
         }
         val speciesBar = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
         }
-        val btnMinW = UiTheme.dp(this, 66)
+        val btnMinW = UiTheme.dp(this, 68)
         for (sp in AlienSpecies.entries) {
-            val btn = UiTheme.makeHudButton(this, sp.shortName, textSizeSp = 10.5f) {
+            val btn = UiTheme.makeHudButton(this, sp.shortName, textSizeSp = 11f) {
                 if (!ShopProduct.isSpeciesUnlocked(sp, ownedProductIds)) {
                     AlienSoundEngine.playSfx(AlienSoundEngine.Sfx.UI_CLICK)
                     statusMessage = GameLocale.tr(
@@ -709,9 +671,10 @@ class MainActivity : Activity() {
                 if (activeStage == EvolutionStage.ALPHA && !isAlphaAvailable(sp)) {
                     activeStage = EvolutionStage.ADULT
                 }
+                val cost = CommandPlanner.placementCost(sp, activeStage)
                 statusMessage = GameLocale.tr(
-                    "SETZEN: ${sp.displayName} (${sp.roleTag}, HP ${sp.baseHp}/ANG ${sp.baseAttack}) → Startfeld tippen!",
-                    "PLACE: ${sp.displayName} (${sp.roleTag}, HP ${sp.baseHp}/ATK ${sp.baseAttack}) → Tap start tile!"
+                    "${sp.displayName} (${cost} Bio · ${sp.roleTag}) → Tippe ein leuchtendes lila Feld!",
+                    "${sp.displayName} (${cost} Bio · ${sp.roleTag}) → Tap a glowing purple tile!"
                 )
                 AlienSoundEngine.playSfx(AlienSoundEngine.Sfx.UI_CLICK)
                 UiTheme.buzz(this@MainActivity, 20L)
@@ -719,6 +682,7 @@ class MainActivity : Activity() {
             }.apply {
                 minWidth = btnMinW
                 minimumWidth = btnMinW
+                setPadding(UiTheme.dp(this@MainActivity, 5), UiTheme.dp(this@MainActivity, 7), UiTheme.dp(this@MainActivity, 5), UiTheme.dp(this@MainActivity, 7))
                 layoutParams = UiTheme.rowLayoutParams(weight = 1f, marginDp = 2, context = this@MainActivity)
             }
             speciesButtons[sp] = btn
@@ -806,6 +770,52 @@ class MainActivity : Activity() {
     private fun isAlphaAvailable(species: AlienSpecies): Boolean =
         isEditorTestMode || species in progress.alphaUnlockedSpecies
 
+    private fun showStagePickerDialog() {
+        val stages = listOf(
+            EvolutionStage.ADULT,
+            EvolutionStage.EGG,
+            EvolutionStage.LARVA,
+            EvolutionStage.ALPHA
+        )
+        val labels = stages.map { st ->
+            val cost = CommandPlanner.placementCost(activeSpecies, st)
+            val marker = if (st == activeStage) "✓ " else ""
+            when (st) {
+                EvolutionStage.ADULT -> GameLocale.tr(
+                    "${marker}Kampfform ($cost Bio) – Standard, sofort einsatzbereit",
+                    "${marker}Adult ($cost Bio) – Standard, ready to fight"
+                )
+                EvolutionStage.EGG -> GameLocale.tr(
+                    "${marker}Ei ($cost Bio) – günstig & getarnt, schlüpft in 2R (Nacht 1R)",
+                    "${marker}Egg ($cost Bio) – cheap & hidden, hatches in 2R (Night 1R)"
+                )
+                EvolutionStage.LARVA -> GameLocale.tr(
+                    "${marker}Larve ($cost Bio) – günstig & Vent-fähig, schwächer",
+                    "${marker}Larva ($cost Bio) – cheap & vent-capable, weaker"
+                )
+                EvolutionStage.ALPHA -> if (isAlphaAvailable(activeSpecies)) {
+                    GameLocale.tr(
+                        "${marker}Alpha ($cost Bio) – Elite (+3 HP, +2 ANG)",
+                        "${marker}Alpha ($cost Bio) – Elite (+3 HP, +2 ATK)"
+                    )
+                } else {
+                    GameLocale.tr(
+                        "Alpha 🔒 – erst unter 'Mut.' freischalten (40 Mut)",
+                        "Alpha 🔒 – unlock under 'Mut.' first (40 Mut)"
+                    )
+                }
+            }
+        }.toTypedArray()
+
+        AlertDialog.Builder(this)
+            .setTitle(GameLocale.tr("Entwicklungsstufe (${activeSpecies.displayName})", "Evolution Stage (${activeSpecies.displayName})"))
+            .setItems(labels) { _, idx ->
+                selectStage(stages[idx])
+            }
+            .setNegativeButton(GameLocale.tr("Abbrechen", "Cancel"), null)
+            .show()
+    }
+
     private fun selectStage(stage: EvolutionStage) {
         if (stage == EvolutionStage.ALPHA && !isAlphaAvailable(activeSpecies)) {
             statusMessage = GameLocale.tr(
@@ -818,13 +828,47 @@ class MainActivity : Activity() {
         }
         activeStage = stage
         placementArmed = true
+        val cost = CommandPlanner.placementCost(activeSpecies, stage)
         statusMessage = GameLocale.tr(
-            "SETZEN: ${activeSpecies.displayName} (${stage.displayName}) → Tippe Startfeld.",
-            "PLACE: ${activeSpecies.displayName} (${stage.displayName}) → Tap start tile."
+            "Stufe '${stage.displayName}' gewählt ($cost Bio) → Tippe ein lila Feld.",
+            "Stage '${stage.displayName}' selected ($cost Bio) → Tap a purple tile."
         )
         AlienSoundEngine.playSfx(AlienSoundEngine.Sfx.UI_CLICK)
         UiTheme.buzz(this, 18L)
         renderCurrentState()
+    }
+
+    private fun executeSmartAction() {
+        val selected = selectedPlacement() ?: run {
+            statusMessage = GameLocale.tr(
+                "Tippe zuerst ein lila Feld, um ein Alien zu setzen.",
+                "Tap a purple tile first to place an alien."
+            )
+            renderCurrentState()
+            return
+        }
+        val lvl = effectiveLevel()
+        val endPos = CommandPlanner.projectedEndPosition(lvl, selected)
+        val canVent = CommandPlanner.canUseVents(selected)
+        val linkedVent = if (canVent) CommandPlanner.findLinkedVent(lvl, endPos) else null
+        when {
+            linkedVent != null -> {
+                placementArmed = false
+                appendCommands(listOf(AlienCommand.VentJump(linkedVent)), AlienSoundEngine.Sfx.VENT_JUMP)
+            }
+            CommandPlanner.hasNearbyConsole(lvl, endPos) -> {
+                placementArmed = false
+                appendCommands(listOf(AlienCommand.ToggleConsole), AlienSoundEngine.Sfx.CONSOLE)
+            }
+            selected.stage == EvolutionStage.EGG && AlienCommand.HatchNow !in selected.commands -> {
+                placementArmed = false
+                appendCommands(listOf(AlienCommand.HatchNow), AlienSoundEngine.Sfx.HATCH)
+            }
+            else -> {
+                placementArmed = false
+                appendCommands(listOf(AlienCommand.Wait), AlienSoundEngine.Sfx.CMD_STEP)
+            }
+        }
     }
 
     private fun handleBoardCellTap(pos: GridPos) {
@@ -833,11 +877,21 @@ class MainActivity : Activity() {
 
         val existing = placements.firstOrNull { it.startPos == pos }
         if (existing != null) {
+            val wasAlreadySelected = existing.id == selectedPlacementId && !placementArmed
             selectedPlacementId = existing.id
             placementArmed = false
+            // Falls bereits ausgewählt und direkt auf Vent/Konsole/Ei -> Sofort-Aktion auslösen
+            if (wasAlreadySelected && CommandPlanner.projectedEndPosition(lvl, existing) == pos) {
+                val validation = CommandPlanner.evaluatePlan(lvl, placements)
+                val instant = CommandPlanner.planSmartTap(lvl, existing, pos, validation.remainingCommands)
+                if (instant.commands.isNotEmpty()) {
+                    appendCommands(instant.commands, sfxForCommands(instant.commands))
+                    return
+                }
+            }
             statusMessage = GameLocale.tr(
-                "ZUG-MODUS (${existing.species.displayName}): Tippe leuchtende Zielfelder, Vent oder Konsole!",
-                "MOVE MODE (${existing.species.displayName}): Tap glowing adjacent tiles, vent, or console!"
+                "${existing.species.displayName} gewählt → Tippe beliebiges Cyan-Ziel, Vent oder Konsole!",
+                "${existing.species.displayName} selected → Tap any cyan tile, vent, or console!"
             )
             AlienSoundEngine.playSfx(AlienSoundEngine.Sfx.UI_CLICK)
             UiTheme.buzz(this, 18L)
@@ -877,22 +931,25 @@ class MainActivity : Activity() {
 
         val selected = selectedPlacement()
         val cell = lvl.cellAt(pos)
+
+        // Im Zug-Modus (oder beim Tippen auf ein Nicht-Startfeld): 1-Tipp-Auto-Route direkt zum Ziel!
         if (selected != null && (!placementArmed || cell == null || !cell.allowsAlienPlacement())) {
-            if (tryDirectTapCommand(lvl, selected, pos)) {
+            if (trySmartBoardTap(lvl, selected, pos)) {
                 return
             }
         }
 
+        // Im Platzier-Modus: Alien auf freies lila Feld setzen
         if (cell == null || !cell.allowsAlienPlacement()) {
             statusMessage = if (selected != null) {
                 GameLocale.tr(
-                    "Tippe ein benachbartes Cyan-Feld für ${selected.species.displayName} oder wähle unten eine Art.",
-                    "Tap an adjacent cyan tile for ${selected.species.displayName}, or select a species below."
+                    "Dieses Feld ist blockiert. Tippe ein leuchtendes Cyan-Feld für ${selected.species.displayName}!",
+                    "Tile blocked. Tap a glowing cyan tile for ${selected.species.displayName}!"
                 )
             } else {
                 GameLocale.tr(
-                    "Nur lila Creep- oder Startfelder sind zum Platzieren erlaubt!",
-                    "Only purple Creep or deploy tiles allow placement!"
+                    "Tippe ein leuchtendes lila Feld, um ${activeSpecies.displayName} zu setzen!",
+                    "Tap a glowing purple tile to place ${activeSpecies.displayName}!"
                 )
             }
             UiTheme.buzz(this, 26L)
@@ -914,8 +971,8 @@ class MainActivity : Activity() {
         val validation = CommandPlanner.evaluatePlan(lvl, placements)
         if (cost > validation.remainingBiomass) {
             statusMessage = GameLocale.tr(
-                "Zu wenig Biomasse (${validation.usedBiomass + cost}/${lvl.maxBiomass})!",
-                "Not enough Biomass (${validation.usedBiomass + cost}/${lvl.maxBiomass})!"
+                "Zu wenig Biomasse (${validation.usedBiomass + cost}/${lvl.maxBiomass})! Tippe ein platziertes Alien oder ▶ ANGRIFF.",
+                "Not enough Biomass (${validation.usedBiomass + cost}/${lvl.maxBiomass})! Tap a placed alien or ▶ ATTACK."
             )
             UiTheme.buzz(this, 40L)
             renderCurrentState()
@@ -931,152 +988,53 @@ class MainActivity : Activity() {
         )
         placements += created
         selectedPlacementId = id
+        // Direkt nach dem Setzen automatisch in den 1-Tipp-Zugmodus wechseln!
+        placementArmed = false
         statusMessage = GameLocale.tr(
-            "${activeSpecies.displayName} bei (${pos.x},${pos.y}) gesetzt · Weiteres Startfeld tippen ODER Einheit antippen für Züge.",
-            "${activeSpecies.displayName} placed at (${pos.x},${pos.y}) · Tap another start tile OR tap unit to program moves."
+            "${activeSpecies.displayName} gesetzt! Tippe jetzt direkt dein Ziel auf dem Brett (oder unten nächstes Alien).",
+            "${activeSpecies.displayName} placed! Now tap any target tile on the board (or pick another alien below)."
         )
         AlienSoundEngine.playSfx(AlienSoundEngine.Sfx.PLACE_ALIEN)
         UiTheme.buzz(this, 24L)
         renderCurrentState()
     }
 
-    private fun tryDirectTapCommand(lvl: LevelDefinition, selected: AlienPlacement, tappedPos: GridPos): Boolean {
-        val endPos = CommandPlanner.projectedEndPosition(lvl, selected)
-
-        if (selected.species.canUseVent) {
-            val linked = CommandPlanner.findLinkedVent(lvl, endPos)
-            if (linked == tappedPos) {
-                placementArmed = false
-                appendSimpleCommand(AlienCommand.VentJump(linked), sfx = AlienSoundEngine.Sfx.VENT_JUMP)
-                return true
-            }
-        }
-
-        val tappedCell = lvl.cellAt(tappedPos)
-        if (tappedCell?.type == TileType.CONSOLE && (tappedPos == endPos || tappedPos.isAdjacentTo(endPos))) {
+    private fun trySmartBoardTap(lvl: LevelDefinition, selected: AlienPlacement, tappedPos: GridPos): Boolean {
+        val validation = CommandPlanner.evaluatePlan(lvl, placements)
+        val plan = CommandPlanner.planSmartTap(lvl, selected, tappedPos, validation.remainingCommands)
+        if (plan.commands.isNotEmpty()) {
             placementArmed = false
-            appendSimpleCommand(AlienCommand.ToggleConsole, sfx = AlienSoundEngine.Sfx.CONSOLE)
+            appendCommands(plan.commands, sfxForCommands(plan.commands))
             return true
         }
-
-        val dir = Direction.fromDelta(tappedPos.x - endPos.x, tappedPos.y - endPos.y)
-        if (dir != null && tappedCell != null &&
-            tappedCell.type != TileType.WALL &&
-            tappedCell.type != TileType.WINDOW &&
-            tappedCell.type != TileType.EXIT
-        ) {
-            placementArmed = false
-            appendSimpleCommand(AlienCommand.Move(dir))
+        if (plan.exceededBudget) {
+            statusMessage = GameLocale.tr(
+                "Zu weit: benötigt ${plan.requiredCommands} Befehle (noch ${validation.remainingCommands} übrig).",
+                "Too far: needs ${plan.requiredCommands} commands (${validation.remainingCommands} left)."
+            )
+            UiTheme.buzz(this, 36L)
+            renderCurrentState()
             return true
         }
         return false
     }
 
+    private fun sfxForCommands(commands: List<AlienCommand>): AlienSoundEngine.Sfx = when {
+        commands.any { it is AlienCommand.ToggleConsole } -> AlienSoundEngine.Sfx.CONSOLE
+        commands.any { it is AlienCommand.VentJump } -> AlienSoundEngine.Sfx.VENT_JUMP
+        commands.any { it is AlienCommand.HatchNow } -> AlienSoundEngine.Sfx.HATCH
+        else -> AlienSoundEngine.Sfx.CMD_STEP
+    }
+
     private fun selectedPlacement(): AlienPlacement? =
         placements.firstOrNull { it.id == selectedPlacementId }
 
-    private fun appendMoveCommand(dir: Direction) {
-        val selected = selectedPlacement() ?: run {
-            statusMessage = GameLocale.tr("Platziere oder tippe zuerst eine Einheit an.", "Place or tap a unit first.")
-            renderCurrentState()
-            return
-        }
-        val lvl = effectiveLevel()
-        val curPos = CommandPlanner.projectedEndPosition(lvl, selected)
-        val nextPos = curPos.move(dir)
-        val targetCell = lvl.cellAt(nextPos)
-        if (targetCell == null || targetCell.type == TileType.WALL || targetCell.type == TileType.WINDOW || targetCell.type == TileType.EXIT) {
-            statusMessage = GameLocale.tr(
-                "Weg nach ${dir.label} ist durch Hülle/ZIEL blockiert.",
-                "Path ${dir.label} is blocked by hull/EXIT."
-            )
-            UiTheme.buzz(this, 30L)
-            renderCurrentState()
-            return
-        }
-        placementArmed = false
-        appendSimpleCommand(AlienCommand.Move(dir))
-    }
-
-    private fun appendVentCommand() {
-        val selected = selectedPlacement() ?: run {
-            statusMessage = GameLocale.tr("Tippe zuerst eine platzierte Einheit an.", "Tap a placed unit first.")
-            renderCurrentState()
-            return
-        }
-        if (!selected.species.canUseVent) {
-            statusMessage = GameLocale.tr(
-                "${selected.species.displayName} kann keine Lüftungsschächte nutzen.",
-                "${selected.species.displayName} cannot use air vents."
-            )
-            UiTheme.buzz(this, 35L)
-            renderCurrentState()
-            return
-        }
-        val lvl = effectiveLevel()
-        val endPos = CommandPlanner.projectedEndPosition(lvl, selected)
-        val linked = CommandPlanner.findLinkedVent(lvl, endPos)
-        if (linked == null) {
-            statusMessage = GameLocale.tr(
-                "Endposition (${endPos.x},${endPos.y}) liegt auf keinem verknüpften Vent-Feld.",
-                "End tile (${endPos.x},${endPos.y}) is not a linked Vent."
-            )
-            UiTheme.buzz(this, 35L)
-            renderCurrentState()
-            return
-        }
-        placementArmed = false
-        appendSimpleCommand(AlienCommand.VentJump(linked), sfx = AlienSoundEngine.Sfx.VENT_JUMP)
-    }
-
-    private fun appendConsoleCommand() {
-        val selected = selectedPlacement() ?: run {
-            statusMessage = GameLocale.tr("Tippe zuerst eine platzierte Einheit an.", "Tap a placed unit first.")
-            renderCurrentState()
-            return
-        }
-        val lvl = effectiveLevel()
-        val endPos = CommandPlanner.projectedEndPosition(lvl, selected)
-        if (!CommandPlanner.hasNearbyConsole(lvl, endPos)) {
-            statusMessage = GameLocale.tr(
-                "Bei (${endPos.x},${endPos.y}) befindet sich keine Konsole in Reichweite!",
-                "No console within reach of (${endPos.x},${endPos.y})!"
-            )
-            UiTheme.buzz(this, 35L)
-            renderCurrentState()
-            return
-        }
-        placementArmed = false
-        appendSimpleCommand(AlienCommand.ToggleConsole, sfx = AlienSoundEngine.Sfx.CONSOLE)
-    }
-
-    private fun appendHatchCommand() {
-        val selected = selectedPlacement() ?: run {
-            statusMessage = GameLocale.tr("Tippe zuerst eine platzierte Ei-Einheit an.", "Tap a placed Egg unit first.")
-            renderCurrentState()
-            return
-        }
-        if (selected.stage != EvolutionStage.EGG) {
-            statusMessage = GameLocale.tr(
-                "Nur Einheiten der Stufe 'Ei' nutzen Schlüpfen.",
-                "Only Egg-stage units can use Hatch."
-            )
-            renderCurrentState()
-            return
-        }
-        placementArmed = false
-        appendSimpleCommand(AlienCommand.HatchNow, sfx = AlienSoundEngine.Sfx.HATCH)
-    }
-
-    private fun appendSimpleCommand(cmd: AlienCommand, sfx: AlienSoundEngine.Sfx = AlienSoundEngine.Sfx.CMD_STEP) {
-        val selected = selectedPlacement() ?: run {
-            statusMessage = GameLocale.tr("Tippe zuerst eine platzierte Einheit an.", "Tap a placed unit first.")
-            renderCurrentState()
-            return
-        }
+    private fun appendCommands(cmds: List<AlienCommand>, sfx: AlienSoundEngine.Sfx = AlienSoundEngine.Sfx.CMD_STEP) {
+        if (cmds.isEmpty()) return
+        val selected = selectedPlacement() ?: return
         val lvl = effectiveLevel()
         val validation = CommandPlanner.evaluatePlan(lvl, placements)
-        if (validation.remainingCommands <= 0) {
+        if (cmds.size > validation.remainingCommands) {
             statusMessage = GameLocale.tr(
                 "Befehls-Limit (${lvl.maxCommands}) erreicht!",
                 "Command limit (${lvl.maxCommands}) reached!"
@@ -1085,11 +1043,19 @@ class MainActivity : Activity() {
             renderCurrentState()
             return
         }
-        replacePlacement(selected.copy(commands = selected.commands + cmd))
-        statusMessage = GameLocale.tr(
-            "Befehl '${cmd.shortLabel()}' für ${selected.species.displayName} programmiert.",
-            "Queued '${cmd.shortLabel()}' for ${selected.species.displayName}."
-        )
+        replacePlacement(selected.copy(commands = selected.commands + cmds))
+        statusMessage = if (cmds.size == 1) {
+            GameLocale.tr(
+                "${selected.species.displayName}: '${cmds.first().shortLabel()}' geplant.",
+                "${selected.species.displayName}: queued '${cmds.first().shortLabel()}'."
+            )
+        } else {
+            val summary = cmds.joinToString("→") { it.shortLabel() }
+            GameLocale.tr(
+                "${selected.species.displayName}: Auto-Route (${cmds.size} Züge: $summary) geplant!",
+                "${selected.species.displayName}: Auto-route (${cmds.size} steps: $summary) queued!"
+            )
+        }
         AlienSoundEngine.playSfx(sfx)
         UiTheme.buzz(this, 16L)
         renderCurrentState()
@@ -1097,20 +1063,37 @@ class MainActivity : Activity() {
 
     private fun undoLastCommand() {
         val selected = selectedPlacement() ?: return
-        if (selected.commands.isEmpty()) return
+        if (selected.commands.isEmpty()) {
+            statusMessage = GameLocale.tr(
+                "${selected.species.displayName} hat keine Züge zum Zurücknehmen.",
+                "${selected.species.displayName} has no moves to undo."
+            )
+            renderCurrentState()
+            return
+        }
         replacePlacement(selected.copy(commands = selected.commands.dropLast(1)))
-        statusMessage = GameLocale.tr("Letzten Befehl rückgängig gemacht.", "Undid last command.")
+        placementArmed = false
+        statusMessage = GameLocale.tr("Letzten Schritt zurückgenommen.", "Undid last step.")
         AlienSoundEngine.playSfx(AlienSoundEngine.Sfx.UI_CLICK)
         UiTheme.buzz(this, 16L)
         renderCurrentState()
     }
 
     private fun removeSelectedPlacement() {
-        val id = selectedPlacementId ?: return
+        val id = selectedPlacementId ?: run {
+            if (placements.isNotEmpty()) {
+                clearAllPlacements()
+            }
+            return
+        }
         placements.removeAll { it.id == id }
         selectedPlacementId = placements.lastOrNull()?.id
         if (placements.isEmpty()) placementArmed = true
-        statusMessage = GameLocale.tr("Einheit entfernt.", "Unit removed.")
+        statusMessage = if (placements.isEmpty()) {
+            GameLocale.tr("Einheit entfernt – tippe ein lila Feld zum Neusetzen.", "Unit removed – tap a purple tile to redeploy.")
+        } else {
+            GameLocale.tr("Einheit entfernt. (Tipp: '✕' gedrückt halten leert alles)", "Unit removed. (Tip: hold '✕' to clear all)")
+        }
         AlienSoundEngine.playSfx(AlienSoundEngine.Sfx.UI_CLICK)
         UiTheme.buzz(this, 20L)
         renderCurrentState()
@@ -1121,9 +1104,9 @@ class MainActivity : Activity() {
         placements.clear()
         selectedPlacementId = null
         placementArmed = true
-        statusMessage = GameLocale.tr("Plan geleert – setze deine Brut neu.", "Plan cleared – redeploy your brood.")
+        statusMessage = GameLocale.tr("Alle Einheiten entfernt – plane neu!", "All units cleared – plan again!")
         AlienSoundEngine.playSfx(AlienSoundEngine.Sfx.UI_CLICK)
-        UiTheme.buzz(this, 22L)
+        UiTheme.buzz(this, 24L)
         renderCurrentState()
     }
 
@@ -1305,53 +1288,83 @@ class MainActivity : Activity() {
 
         roundBadge.text = "Max:${lvl.maxRounds}R"
 
-        undoCmdBtn.text = GameLocale.tr("↶ Zur.", "↶ Undo")
-        removeCmdBtn.text = GameLocale.tr("✕ Einh.", "✕ Del")
-        ventCmdBtn.text = "Vent"
-        consoleCmdBtn.text = GameLocale.tr("Schalter", "Switch")
-        waitCmdBtn.text = GameLocale.tr("Warten", "Wait")
-        hatchCmdBtn.text = GameLocale.tr("Schlüpf.", "Hatch")
-        clearAllBtn.text = GameLocale.tr("Leeren", "Clear")
-        startAttackBtn.text = GameLocale.tr("ANGRIFF ▶", "ATTACK ▶")
+        undoCmdBtn.text = "↶"
+        removeCmdBtn.text = "✕"
+        startAttackBtn.text = GameLocale.tr("▶ ANGRIFF", "▶ ATTACK")
 
         val selected = selectedPlacement()
         val endPos = selected?.let { CommandPlanner.projectedEndPosition(lvl, it) }
-        val ventReady = selected != null && endPos != null && selected.species.canUseVent &&
-            CommandPlanner.findLinkedVent(lvl, endPos) != null
-        val consoleReady = endPos != null && CommandPlanner.hasNearbyConsole(lvl, endPos)
-        val hatchReady = selected?.stage == EvolutionStage.EGG
+        val hasSelection = selected != null && endPos != null
+        val canUndo = selected != null && selected.commands.isNotEmpty()
 
-        UiTheme.styleToggleButton(ventCmdBtn, selected = ventReady, accentColor = UiTheme.ACCENT_CYAN, enabled = true)
-        UiTheme.styleToggleButton(consoleCmdBtn, selected = consoleReady, accentColor = UiTheme.ACCENT_ALIEN, enabled = true)
-        UiTheme.styleToggleButton(hatchCmdBtn, selected = hatchReady, accentColor = Color.parseColor("#C77DFF"), enabled = true)
+        UiTheme.styleToggleButton(undoCmdBtn, selected = false, accentColor = UiTheme.ACCENT_CYAN, enabled = canUndo)
+        UiTheme.styleToggleButton(removeCmdBtn, selected = false, accentColor = UiTheme.ACCENT_ALERT, enabled = placements.isNotEmpty())
 
-        selectedUnitBar.text = if (selected != null && endPos != null) {
-            val modeTag = if (placementArmed) GameLocale.tr("SETZEN", "PLACE") else GameLocale.tr("ZUG", "MOVE")
-            val q = if (selected.commands.isEmpty()) "—" else selected.commands.joinToString(" ") { it.shortLabel() }
-            "[$modeTag] ${selected.species.displayName} (${selected.stage.displayName}) → (${endPos.x},${endPos.y}) · $q"
-        } else {
-            GameLocale.tr(
-                "[SETZEN] ${activeSpecies.displayName} (${CommandPlanner.placementCost(activeSpecies, activeStage)} Bio) → Startfeld tippen",
-                "[PLACE] ${activeSpecies.displayName} (${CommandPlanner.placementCost(activeSpecies, activeStage)} Bio) → Tap start tile"
-            )
+        // Ein einziger smarter Kontext-Button statt 4 separater Spezial-Buttons!
+        val ventReady = hasSelection && CommandPlanner.canUseVents(selected!!) &&
+            CommandPlanner.findLinkedVent(lvl, endPos!!) != null
+        val consoleReady = hasSelection && CommandPlanner.hasNearbyConsole(lvl, endPos!!)
+        val hatchReady = hasSelection && selected!!.stage == EvolutionStage.EGG && AlienCommand.HatchNow !in selected.commands
+        when {
+            ventReady -> {
+                smartActionBtn.text = "⚡ Vent"
+                UiTheme.styleToggleButton(smartActionBtn, selected = true, accentColor = UiTheme.ACCENT_CYAN, enabled = validation.remainingCommands > 0)
+            }
+            consoleReady -> {
+                smartActionBtn.text = GameLocale.tr("⚡ Schalter", "⚡ Switch")
+                UiTheme.styleToggleButton(smartActionBtn, selected = true, accentColor = UiTheme.ACCENT_ALIEN, enabled = validation.remainingCommands > 0)
+            }
+            hatchReady -> {
+                smartActionBtn.text = GameLocale.tr("⚡ Schlüpf.", "⚡ Hatch")
+                UiTheme.styleToggleButton(smartActionBtn, selected = true, accentColor = Color.parseColor("#C77DFF"), enabled = validation.remainingCommands > 0)
+            }
+            else -> {
+                smartActionBtn.text = GameLocale.tr("⏸ Warten", "⏸ Wait")
+                UiTheme.styleToggleButton(smartActionBtn, selected = false, accentColor = UiTheme.ACCENT_CYAN, enabled = hasSelection && validation.remainingCommands > 0)
+            }
         }
 
-        infoBanner.text = statusMessage ?: validation.errorMessage ?: lvl.hint
+        val stageLabel = when (activeStage) {
+            EvolutionStage.EGG -> GameLocale.tr("Ei ▾", "Egg ▾")
+            EvolutionStage.LARVA -> GameLocale.tr("Larve ▾", "Larva ▾")
+            EvolutionStage.ADULT -> GameLocale.tr("Kampf ▾", "Adult ▾")
+            EvolutionStage.ALPHA -> "Alpha ▾"
+        }
+        stagePickerBtn.text = stageLabel
+        UiTheme.styleToggleButton(
+            stagePickerBtn,
+            selected = activeStage != EvolutionStage.ADULT,
+            accentColor = UiTheme.ACCENT_CYAN,
+            enabled = true
+        )
+
+        val defaultGuide = if (placements.isEmpty()) {
+            GameLocale.tr(
+                "1. Tippe ein lila Feld (${activeSpecies.displayName} · ${CommandPlanner.placementCost(activeSpecies, activeStage)} Bio) · ${lvl.hint}",
+                "1. Tap a purple tile (${activeSpecies.displayName} · ${CommandPlanner.placementCost(activeSpecies, activeStage)} Bio) · ${lvl.hint}"
+            )
+        } else if (placementArmed) {
+            GameLocale.tr(
+                "Tippe ein freies lila Feld für ${activeSpecies.displayName} (${CommandPlanner.placementCost(activeSpecies, activeStage)} Bio).",
+                "Tap a free purple tile to place ${activeSpecies.displayName} (${CommandPlanner.placementCost(activeSpecies, activeStage)} Bio)."
+            )
+        } else if (selected != null) {
+            GameLocale.tr(
+                "${selected.species.displayName} (${selected.commands.size} Züge): Tippe Ziel auf dem Brett – oder wähle unten nächstes Alien.",
+                "${selected.species.displayName} (${selected.commands.size} moves): Tap any target tile – or pick another alien below."
+            )
+        } else {
+            lvl.hint
+        }
+
+        infoBanner.text = statusMessage ?: if (validation.errorMessage != null && placements.isNotEmpty()) {
+            validation.errorMessage
+        } else {
+            defaultGuide
+        }
         infoBanner.setTextColor(
             if (validation.errorMessage != null && placements.isNotEmpty()) UiTheme.ACCENT_AMBER else UiTheme.TEXT_PRIMARY
         )
-
-        for ((stage, btn) in stageButtons) {
-            val unlocked = stage != EvolutionStage.ALPHA || isAlphaAvailable(activeSpecies)
-            val short = when (stage) {
-                EvolutionStage.EGG -> GameLocale.tr("Ei", "Egg")
-                EvolutionStage.LARVA -> GameLocale.tr("Larve", "Larva")
-                EvolutionStage.ADULT -> GameLocale.tr("Kampf", "Adult")
-                EvolutionStage.ALPHA -> if (unlocked) "Alpha" else "Alpha🔒"
-            }
-            btn.text = short
-            UiTheme.styleToggleButton(btn, activeStage == stage, UiTheme.ACCENT_CYAN, enabled = true)
-        }
 
         for ((sp, btn) in speciesButtons) {
             val isUnlocked = ShopProduct.isSpeciesUnlocked(sp, ownedProductIds)
@@ -1431,7 +1444,7 @@ class MainActivity : Activity() {
 
         playPauseBtn.text = if (isAutoPlaying) "⏸ Pause" else "▶ Auto"
         speedBtn.text = if (speedFast) "2×" else "1×"
-        backPhase1Btn.text = "↺ Phase 1"
+        backPhase1Btn.text = GameLocale.tr("↺ Planen", "↺ Plan")
 
         if (lastRenderedStep != idx) {
             val prevSnap = if (idx > 0 && lastRenderedStep == idx - 1) sim.snapshots[idx - 1] else null
@@ -1652,10 +1665,11 @@ class MainActivity : Activity() {
                 buildString {
                     append("TAKTIK-HINWEIS (${lvl.title}):\n")
                     append(lvl.hint).append("\n\n")
-                    append("STEUERUNG (PHASE 1):\n")
-                    append("• Unten Alien-Art wählen → auf lila Creep-/Startfeld tippen.\n")
-                    append("• Platziertes Alien antippen → leuchtende Cyan-Nachbarfelder, Ziel-Vent oder Konsole direkt antippen (oder Befehls-Buttons nutzen).\n")
-                    append("• Gegner auf dem Brett antippen → zeigt HP, Rüstung & Konter-Tipp!\n\n")
+                    append("EINFACHE 3-SCHRITTE-STEUERUNG:\n")
+                    append("1. Unten Alien wählen → auf ein leuchtendes lila Feld tippen.\n")
+                    append("2. Direkt dein Ziel auf dem Brett tippen (auch mehrere Felder weg, durch Vents oder direkt auf Konsolen → Auto-Route!).\n")
+                    append("3. Auf '▶ ANGRIFF' tippen! (Mit '↶' Schritt zurück, '✕' Einheit weg, langes Drücken auf '✕' leert alles.)\n")
+                    append("• Gegner antippen → zeigt HP, Rüstung & Konter-Tipp!\n\n")
                     append("TAG & NACHT:\n")
                     append("• Tag: Marines RW 3, Geschütze RW 4.\n")
                     append("• Nacht / Licht-Aus: Marines RW 1, Lauerer +2 Schaden, Eier schlüpfen 1R schneller.\n\n")
@@ -1669,10 +1683,11 @@ class MainActivity : Activity() {
                 buildString {
                     append("TACTICAL BRIEFING (${lvl.title}):\n")
                     append(lvl.hint).append("\n\n")
-                    append("CONTROLS (PHASE 1):\n")
-                    append("• Pick an alien species at the bottom → tap a glowing purple Creep/deploy tile.\n")
-                    append("• Tap a placed alien → directly tap highlighted cyan tiles, linked Vents, or Consoles (or use the command buttons).\n")
-                    append("• Tap any enemy on the grid → inspect HP, armor & counter tip!\n\n")
+                    append("SIMPLE 3-STEP CONTROLS:\n")
+                    append("1. Pick an alien below → tap a glowing purple tile.\n")
+                    append("2. Tap your target tile directly on the board (even far away, through Vents, or straight onto Consoles → Auto-Route!).\n")
+                    append("3. Tap '▶ ATTACK'! ('↶' undoes step, '✕' removes unit, long-press '✕' clears all.)\n")
+                    append("• Tap any enemy → inspect HP, armor & counter tip!\n\n")
                     append("DAY & NIGHT CYCLES:\n")
                     append("• Day: Marines range 3, Auto-Turrets range 4.\n")
                     append("• Night / Light-Off: Marines range 1, Stalkers +2 damage, Eggs hatch 1 round faster.\n\n")
