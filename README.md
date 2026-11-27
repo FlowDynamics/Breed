@@ -14,12 +14,11 @@
 
 ## Highlights & Features
 
-- **2-Phasen-Gameplay (100 % deterministisch wie Schach):**
-  - **Phase 1 (Planung):** Wähle unten eine Alien-Art → tippe auf ein leuchtendes lila Startfeld → tippe anschließend einfach dein Ziel, ein Vent oder eine Konsole direkt auf dem Brett an (**1-Tipp-Auto-Route** per kürzestem Weg!). Nur noch 2 aufgeräumte Button-Reihen inkl. smartem Kontext-Button (`Vent`/`Schalter`/`Schlüpfen`/`Warten`) & `▶ ANGRIFF`.
-  - **Phase 2 (Automatik):** Vollautomatische, flüssig animierte 60-FPS-Rundenschritte (`1×`/`2×`/Einzelschritt) mit Projektilen, Flammenkegeln, Säure-Explosionen und Screen-Shake.
-- **Schalter-/Schach-Puzzle, Konter & Überzahl:**
-  - Verknüpfte Lüftungsschächte (`VENT`), Konsolen (`CONSOLE`) für gepanzerte Schotts (`DOOR`), Licht-Aus & Geschütz-Abschaltung sowie explosive Säurefässer (`ACID_BARREL`).
-  - **Tag- & Nacht-Zyklen** beeinflussen Gegner-Sichtweiten, Lauerer-Schattenschaden und Ei-Brutzeiten.
+- **Echtzeit-Hive-Flow-Gameplay (inspiriert von *Colony Flow* × *Alien* / *StarCraft*):**
+  - **1-Tipp-Steuerung ohne komplizierte Menüs:** Unten liegen 4 Spalten farbiger **Alien-Kapsel-Blöcke** (🟣 Lauerer, 🟢 Säure-Brut, 🟠 Koloss, 🔵 Netz-Brut, 🩷 Schwarm-Psyche). Ein Tipp schiebt die vorderste Kapsel in einen der **5 aktiven Brut-Slots**!
+  - **60-FPS-Echtzeit-Gefechte:** Sofort stürmen deine Aliens nach oben ins biomechanische Raumschiff-Zimmer und bekämpfen die farblich passenden Wachen (Space Marines, Belagerungs-Panzer, Pyro-Wachen, Auto-Geschütze, Kommandanten) an der offenen Front!
+  - **Taktisches Reihenfolge-Puzzle:** Verdeckte Wachen hinter anderen Reihen müssen erst freigekämpft werden – füllen sich alle 5 Slots mit blockierten Klassen, droht eine Blockade!
+  - **Säurefässer, Doppel-Kapseln & `?`-Kokons:** Explosive Säurefässer sprengen verschlossene Schotts auf; spätere Räume bringen gekoppelte 2-Slot-Kapseln und verdeckte `?`-Kokons.
 - **Raumschiff-Kampagne, feste Mutations-Bäume & Raumverlust:**
   - 8 handgefertigte, per Unit-Test als lösbar verifizierte Räume über *Frachter Nostromo-IX* (Acheron IV) und *Kreuzer Kryon-Bastion* (Kryon VII).
   - Raum-Ausbauten (`BROOD_CHAMBER`, `BIO_EXTRACTOR`, `GENE_INCUBATOR`), feste Art-Mutations-Bäume (ohne Arten-Kreuzung) + Alpha-Stufe.

@@ -1,6 +1,6 @@
 # Implementierungsplan & Status – **BREED**
 
-Letzte Aktualisierung: **19.11.2026**
+Letzte Aktualisierung: **27.11.2026**
 
 ---
 
@@ -11,10 +11,11 @@ Letzte Aktualisierung: **19.11.2026**
   - `build.gradle`, `app/build.gradle` (inkl. `com.github.triplet.play` 3.8.6, `billing:8.3.0`, `signingConfigs.release`), `settings.gradle`, `gradle.properties`, `local.properties`, `app/proguard-rules.pro`, `gradle/wrapper/*`
   - `app/src/main/AndroidManifest.xml` (Hochformat für `SplashActivity`, `MainActivity` & `LevelEditorActivity`), `app/src/main/res/drawable/ic_launcher_breed.xml`, `app/src/main/res/values/strings.xml` (EN) & `values-de/strings.xml` (DE)
   - `app/src/main/play/` (Store-Listings, Release Notes, 512×512 App-Icon, 1024×500 Feature-Grafiken & 1080×2340 Hochformat-Screenshots auf `de-DE` & `en-US`) + `docs/PLAY_STORE_CHECKLIST.md` + `docs/PRIVACY_POLICY.md` + `README.md`
-- **Deterministische Spiellogik (`engine/` – ohne Android-UI-Imports):**
-  - `GameLocale.kt` (DE & EN), `GridModel.kt`, `UnitModel.kt` (5 Basis- + 2 Elite-Aliens), `ShopCatalog.kt` (Elite-Aliens & Bio-Waffen), `CommandPlanner.kt`, `TurnSimulator.kt`, `CampaignState.kt`
+- **Echtzeit-Hive-Flow-Engine (`engine/` – ohne Android-UI-Imports):**
+  - `FlowModel.kt`, `FlowGameEngine.kt` (60-FPS-Echtzeit-Schwarmfluss mit 5 Brut-Slots, Front-Linien-BFS, Säurefass-Schottsprengung, gekoppelten Doppel-Kapseln, verdeckten `?`-Kokons & Elite-Joker-Schlag)
+  - `GameLocale.kt` (DE & EN), `GridModel.kt`, `UnitModel.kt` (5 Basis- + 2 Elite-Aliens), `ShopCatalog.kt` (Elite-Aliens & Bio-Waffen), `CampaignState.kt`
 - **Kampagne, Serialisierung & Speicher (`data/`):**
-  - `LevelJsonCodec.kt`, `BuiltInCampaign.kt` (8 zweisprachige Kampagnen-Räume über *Nostromo-IX* / Acheron IV & *Kryon-Bastion* / Kryon VII), `LocalStorage.kt`
+  - `FlowCampaign.kt` (8 zweisprachige Echtzeit-Hive-Flow-Zimmer über *Nostromo-IX* / Acheron IV & *Kryon-Bastion* / Kryon VII, alle per `FlowGameTest` auf exakte Balance & Deadlock-freie Lösbarkeit bewiesen), `BuiltInCampaign.kt`, `LevelJsonCodec.kt`, `LocalStorage.kt`
 - **Google Play In-App-Billing (`billing/`):**
   - `BillingManager.kt` (Billing Library v8 / `8.3.0`, Einmalkäufe, Auto-Reconnect, Restore Purchases, Acknowledge)
 - **Audio-Engine (`audio/`):**
