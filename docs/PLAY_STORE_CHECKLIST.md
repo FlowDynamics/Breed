@@ -35,10 +35,8 @@ Dieses Dokument fasst den aktuellen Veröffentlichungsstand von **BREED** (`com.
 Für rechtliche Erklärungen stellt Google keine API bereit — diese Punkte müssen einmalig in der Play Console angeklickt werden (Dauer ca. 3–5 Minuten):
 
 1. **Datenschutzerklärung (Privacy Policy):**
-   - Fertige zweisprachige Datenschutzerklärung (DE & EN): [`docs/PRIVACY_POLICY.md`](PRIVACY_POLICY.md)
-   - Nach `git push` auf GitHub (sofern das Repo öffentlich ist) als URL eintragen:
-     `https://github.com/FlowDynamics/Breed/blob/main/docs/PRIVACY_POLICY.md`
-     *(oder auf deiner eigenen Website/GitHub Pages hosten).*
+   - Fertige zweisprachige Datenschutzerklärung (DE & EN): [`docs/PRIVACY_POLICY.md`](PRIVACY_POLICY.md) & [`docs/privacy.html`](privacy.html)
+   - Live über GitHub Pages: `https://flowdynamics.github.io/Breed/privacy.html` *(oder GitHub-Markdown: `https://github.com/FlowDynamics/Breed/blob/main/docs/PRIVACY_POLICY.md`).*
 2. **App-Zugriff:**
    - **„Alle Funktionen sind ohne besonderen Zugriff verfügbar“** *(kein Login, kein Account nötig).*
 3. **Werbung:**
